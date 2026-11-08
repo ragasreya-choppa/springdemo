@@ -1,0 +1,62 @@
+package com.example.springdemo.repository;
+import com.example.springdemo.Student;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class StudentRepository{
+    Student s1 = new Student(1,"Sreya","CSE");
+    Student s2 = new Student(2,"Manu","Computers");
+    Student s3 = new Student(3,"Rags","IT");
+
+    List<Student> students = new ArrayList<>(List.of(s1,s2,s3));
+
+    public List<Student> findAll(){
+        return students;
+    }
+
+    public Student findById(int id)
+    {
+        for(Student student:students){
+            if(student.getStudentId()==id)
+            {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    public Student save(Student student)
+    {
+        students.add(student);
+        return student;
+    }
+
+    public Student updateStudent(int id, Student updatedStudent)
+    {
+        for(Student student:students){
+            if(student.getStudentId()==id)
+            {
+                student.setStudentName(updatedStudent.getStudentName());
+                student.setStudentCourse(updatedStudent.getStudentCourse());
+                return student;
+            }
+        }
+        return null;
+    }
+
+    public boolean deleteStudent(int id)
+    {
+        Student student = findById(id);
+        if(student==null)
+        {
+            return false;
+        }
+        return students.remove(student);
+    }
+
+}
