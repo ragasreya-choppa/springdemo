@@ -21,6 +21,12 @@ public class StudentServiceTest {
 
         Optional<Student> result = mockRepository.findById(2);
 
+        Student actualStudent = studentService.getStudentById(2);
+
+        assertEquals(2,actualStudent.getStudentId());
+
+        assertEquals("Sreya",actualStudent.getStudentName());
+
         assertTrue(result.isPresent());
 
         assertEquals(2,result.get().getStudentId());
