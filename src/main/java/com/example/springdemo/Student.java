@@ -30,7 +30,7 @@ public class Student
         this.studentName = studentName;
         this.studentCourse = studentCourse;
     }
-    public int getStudentId()
+    public Integer getStudentId()
     {
         return studentId;
     }
@@ -51,6 +51,7 @@ public class Student
 
     @JsonCreator
     public Student(){}
+
     public void setStudentId(int studentId)
     {
         this.studentId=studentId;

@@ -12,7 +12,7 @@ public class StudentServiceTest {
     @Test
     void testMockRepository()
     {
-        // step 1: Create Mock Repository
+        // step 1: Create a Mock StudentRepository
         StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
 
         // step 2: create real student service
@@ -20,7 +20,6 @@ public class StudentServiceTest {
 
         // step 3: create Test data
         Student student = new Student(2,"Sreya","Spring Boot Development");
-
 
         // step 4: configure the Mock behavior
         Mockito.when(mockRepository.findById(2)).thenReturn(Optional.of(student));
@@ -33,7 +32,7 @@ public class StudentServiceTest {
 
         assertEquals("Sreya",actualStudent.getStudentName());
 
-        // step 7: verify repository introduction
+        // step 7: verify repository interaction
         Mockito.verify(mockRepository, Mockito.times(1)).findById(2);
 
     }
@@ -56,5 +55,33 @@ public class StudentServiceTest {
         assertEquals("Student Not Found!", exception.getMessage());
 
     }
+
+    @Test
+    void testCreateStudent(){
+        // create a mock StudentRepository
+        StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
+
+        // call a real StudentService using the mock StudentRepository created above!
+        StudentService studentService = new StudentService(mockRepository);
+
+        // create a Student object with the name "Sreya" and course "Java" using two-arg constructor.
+        Student student = new Student("Sreya","Java");
+
+        // configure Mockito's save() behavior
+        Mockito.when(mockRepository.save(student)).thenReturn(student);
+
+        // call real student method
+        Student savedStudent = studentService.createStudent(student);
+
+        // verify the returned results
+        assertEquals("Sreya", savedStudent.getStudentName());
+        assertEquals("Java", savedStudent.getStudentCourse());
+
+        Mockito.verify(mockRepository, Mockito.times(1)).save(student);
+
+    }
+
+
+
 
 }
