@@ -81,7 +81,28 @@ public class StudentServiceTest {
 
     }
 
+    @Test
+    void testDeleteStudent(){
+        // create a mock repository
+        StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
+
+        // call a real StudentService using the mock StudentRepository created above!
+        StudentService studentService = new StudentService(mockRepository);
 
 
+        //Student student = new Student(1,"Sreya","Spring Boot Development");
+        // For testing this delete method - We don't need above statement! because We don't need to create a student object for this
+        // test because we're only checking whether the student exists, not retrieving the student details.
+
+
+        // Configure existsById(1) to return true
+        Mockito.when(mockRepository.existsById(1)).thenReturn(true);
+
+        // call real StudentService deleteStudent() method.
+        studentService.deleteStudent(1);
+
+        Mockito.verify(mockRepository, Mockito.times(1)).deleteById(1);
+
+    }
 
 }
