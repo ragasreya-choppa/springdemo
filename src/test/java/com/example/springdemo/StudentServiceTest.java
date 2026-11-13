@@ -134,4 +134,38 @@ public class StudentServiceTest {
 
     }
 
+    @Test
+    void testUpdateStudent(){
+
+        // Step 1: Create mock StudentRepository
+        StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
+
+        // Step 2: Create real StudentService
+        StudentService studentService = new StudentService(mockRepository);
+
+        // Step 3: Create existing student
+        Student existingStudent = new Student(1,"Sreya","Java");
+
+        // Step 4: Create updated student
+        Student updatedStudent = new Student("Sreya R","Spring Boot");
+
+        Mockito.when(mockRepository.findById(1)).thenReturn(Optional.of(existingStudent));
+
+        Mockito.when(mockRepository.save(existingStudent)).thenReturn(existingStudent);
+
+        Student result = studentService.updateStudent(1,updatedStudent);
+
+        assertEquals(1,result.getStudentId());
+
+        assertEquals("Sreya R",result.getStudentName());
+
+        assertEquals("Spring Boot",result.getStudentCourse());
+
+        Mockito.verify(mockRepository, Mockito.times(1)).save(existingStudent);
+    }
+    
 }
+
+
+
+
