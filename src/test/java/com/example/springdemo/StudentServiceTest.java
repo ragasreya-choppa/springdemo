@@ -163,7 +163,36 @@ public class StudentServiceTest {
 
         Mockito.verify(mockRepository, Mockito.times(1)).save(existingStudent);
     }
-    
+
+
+
+    @Test
+    void testUpdateStudentNotFound(){
+
+        // Step 1: Create mock StudentRepository
+        StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
+
+        // Step 2: Create real StudentService
+        StudentService studentService = new StudentService(mockRepository);
+
+        // Step 3: Create updatedStudent
+        Student updatedStudent = new Student("Sreya","SpringBoot");
+
+        // Step 4: Configure findById(99)
+        //         to return Optional.empty()
+        Mockito.when(mockRepository.findById(99)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception=assertThrows(
+                ResponseStatusException.class,
+                ()-> studentService.updateStudent(99,updatedStudent)
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        Mockito.verify(mockRepository, Mockito.never())
+                .save(Mockito.any(Student.class));
+
+    }
+
 }
 
 
