@@ -3,6 +3,9 @@ import com.example.springdemo.service.StudentService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import com.example.springdemo.repository.StudentRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,6 +105,32 @@ public class StudentServiceTest {
         studentService.deleteStudent(1);
 
         Mockito.verify(mockRepository, Mockito.times(1)).deleteById(1);
+
+    }
+
+    @Test
+    void testDeleteStudentNotFound(){
+
+        // Step 1: Create mock StudentRepository
+        StudentRepository mockRepository = Mockito.mock(StudentRepository.class);
+
+        // Step 2: Create real StudentService
+        StudentService studentService = new StudentService(mockRepository);
+
+        // Step 3: Configure existsById(99) to return false
+        Mockito.when(mockRepository.existsById(99)).thenReturn(false);
+
+        ResponseStatusException exception = assertThrows(
+                ResponseStatusException.class,
+                ()-> studentService.deleteStudent(99)
+        );
+
+        assertEquals(
+          HttpStatus.NOT_FOUND,
+          exception.getStatusCode()
+        );
+
+        Mockito.verify(mockRepository, Mockito.never()).deleteById(99);
 
     }
 
