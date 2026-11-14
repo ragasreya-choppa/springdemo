@@ -175,4 +175,16 @@ public class StudentControllerTest {
                 .andExpect(content().string("Student Not Found!"));
     }
 
+    @Test
+    void testDeleteStudentNotFound() throws Exception{
+        StudentService mockService = Mockito.mock(StudentService.class);
+        StudentController studentController = new StudentController(mockService);
+
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(studentController).setControllerAdvice( new GlobalExceptionHandler()).build();
+
+        Mockito.doThrow(new StudentNotFoundException("Student Not Found!")).when(mockService).deleteStudent(99);
+
+        mockMvc.perform(delete("/students/99")).andExpect(status().isNotFound()).andExpect(content().string("Student Not Found!"));
+    }
+
 }
