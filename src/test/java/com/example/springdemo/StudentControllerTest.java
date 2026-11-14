@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import org.springframework.http.MediaType;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class StudentControllerTest {
     @Test
@@ -87,4 +87,38 @@ public class StudentControllerTest {
                 .andExpect(jsonPath("$.studentId").value(1));
 
     }
+
+    @Test
+    void testUpdateStudent() throws Exception {
+        StudentService mockService = Mockito.mock(StudentService.class);
+
+        StudentController studentController = new StudentController(mockService);
+
+        MockMvc mockMvc  = MockMvcBuilders.standaloneSetup(studentController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+
+        Student updatedStudent = new Student(1,"Sreya","SpringBoot");
+
+        Mockito.when(mockService.updateStudent(Mockito.eq(1),Mockito.any(Student.class))).thenReturn(updatedStudent);
+
+        String jsonBody = """
+                {
+                "studentName" : "Sreya",
+                "studentCourse" : "SpringBoot"
+                }
+                """;
+
+
+        mockMvc.perform(put("/students/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentId").value(1))
+                .andExpect(jsonPath("$.studentName").value("Sreya"))
+                .andExpect(jsonPath("$.studentCourse").value("SpringBoot"));
+
+    }
+
+
 }
