@@ -133,4 +133,24 @@ public class StudentControllerTest {
         Mockito.verify(mockService).deleteStudent(1);
     }
 
+    @Test
+    void testCreateStudentWithInvalidData() throws Exception{
+        StudentService mockService = Mockito.mock(StudentService.class);
+        StudentController studentController = new StudentController(mockService);
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(studentController).setControllerAdvice(new GlobalExceptionHandler()).build();
+
+        String jsonBody = """
+                {
+                "studentName" : " ",
+                "studentCourse" : "Java"
+                }
+                """;
+
+        mockMvc.perform(post("/students").contentType(MediaType.APPLICATION_JSON).content(jsonBody))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verify(mockService, Mockito.never()).createStudent(Mockito.any(Student.class));
+
+    }
+
 }
