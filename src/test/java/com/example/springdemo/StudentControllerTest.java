@@ -121,4 +121,16 @@ public class StudentControllerTest {
     }
 
 
+    @Test
+    void testDeleteStudent() throws Exception{
+        StudentService mockService = Mockito.mock(StudentService.class);
+        StudentController studentController = new StudentController(mockService);
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(studentController).setControllerAdvice(new GlobalExceptionHandler()).build();
+
+        mockMvc.perform(delete("/students/1"))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(mockService).deleteStudent(1);
+    }
+
 }
