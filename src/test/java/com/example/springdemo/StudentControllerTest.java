@@ -153,4 +153,26 @@ public class StudentControllerTest {
 
     }
 
+    @Test
+    void testUpdateStudentNotFound() throws Exception {
+        StudentService mockService = Mockito.mock(StudentService.class);
+        StudentController studentController = new StudentController(mockService);
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(studentController).setControllerAdvice(new GlobalExceptionHandler()).build();
+
+        Mockito.when(mockService.updateStudent(Mockito.eq(99), Mockito.any(Student.class))).thenThrow(new StudentNotFoundException("Student Not Found!"));
+
+        String jsonBody = """
+                {
+                "studentName" : "Sreya",
+                "studentCourse" : "Java"
+                }
+                """;
+
+        mockMvc.perform(put("/students/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Student Not Found!"));
+    }
+
 }
