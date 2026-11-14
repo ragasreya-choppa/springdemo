@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import org.springframework.http.MediaType;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public class StudentControllerTest {
     @Test
@@ -52,6 +54,37 @@ public class StudentControllerTest {
         Mockito.when(mockService.getStudentById(99)).thenThrow(new StudentNotFoundException("Student Not Found!"));
 
         mockMvc.perform(get("/students/99")).andExpect(status().isNotFound()).andExpect(content().string("Student Not Found!"));
+
+    }
+
+    @Test
+    void testCreateStudent() throws Exception{
+        StudentService mockService = Mockito.mock(StudentService.class);
+        StudentController studentController = new StudentController(mockService);
+        MockMvc mockMvc = MockMvcBuilders
+                .standaloneSetup(studentController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+
+        Student savedStudent = new Student(1,"Sreya","Java");
+
+        //Configure Mockito
+        Mockito.when(mockService.createStudent(Mockito.any(Student.class))).thenReturn(savedStudent);
+
+        String jsonBody = """
+                {
+                "studentName" : "Sreya",
+                "studentCourse" : "Java"
+                }
+                """;
+
+        mockMvc.perform(post("/students")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.studentName").value("Sreya"))
+                .andExpect(jsonPath("$.studentCourse").value("Java"))
+                .andExpect(jsonPath("$.studentId").value(1));
 
     }
 }
