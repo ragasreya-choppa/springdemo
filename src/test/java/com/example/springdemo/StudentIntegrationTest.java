@@ -11,8 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -82,5 +81,40 @@ public class StudentIntegrationTest {
         assertEquals("SpringBoot", savedStudent.get().getStudentCourse());
 
     }
+
+    @Test
+    @Transactional
+    void testUpdateStudent() throws Exception{
+        // create and save student
+        Student student = new Student("Manu","Java");
+        Student savedStudent = studentRepository.save(student);
+
+        // prepare updated student details
+        String jsonBody = """
+                {
+                "studentName" : "Manu",
+                "studentCourse" : "SpringBoot"
+                }
+                """;
+
+        // send PUT request and verify response
+        mockMvc.perform(put("/students/{id}",savedStudent.getStudentId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.studentId").value(savedStudent.getStudentId()))
+                .andExpect(jsonPath("$.studentName").value("Manu"))
+                .andExpect(jsonPath("$.studentCourse").value("SpringBoot"));
+
+        // retrieve the updated student
+        Optional<Student> updatedStudent = studentRepository.findById(savedStudent.getStudentId());
+
+        //verify the database values
+        assertTrue(updatedStudent.isPresent());
+        assertEquals("Manu",updatedStudent.get().getStudentName());
+        assertEquals("SpringBoot",updatedStudent.get().getStudentCourse());
+
+    }
+
 
 }
