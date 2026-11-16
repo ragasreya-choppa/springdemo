@@ -131,5 +131,32 @@ public class StudentIntegrationTest {
 
     }
 
+    @Test
+    @Transactional
+    void testCreateStudentWithBlankName() throws Exception{
+
+        // create a JSON with Blank studentName
+        String jsonBody = """
+                {
+                "studentName" : " ",
+                "studentCourse" : "Java"
+                }
+                """;
+
+
+        //  count students before the request
+        long countBefore = studentRepository.count();
+
+
+        // send POST request with invalid data using MockMvc
+        mockMvc.perform(post("/students").contentType(MediaType.APPLICATION_JSON).content(jsonBody)).andExpect(status().isBadRequest());
+
+        // count students after the request
+        long countAfter = studentRepository.count();
+
+        // verify no students recorded
+        assertEquals(countBefore,countAfter);
+
+    }
 
 }
