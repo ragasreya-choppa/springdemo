@@ -9,8 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -113,6 +112,22 @@ public class StudentIntegrationTest {
         assertTrue(updatedStudent.isPresent());
         assertEquals("Manu",updatedStudent.get().getStudentName());
         assertEquals("SpringBoot",updatedStudent.get().getStudentCourse());
+
+    }
+
+    @Test
+    @Transactional
+    void testDeleteStudent() throws Exception{
+        Student student = new Student("Sreya","Java");
+        Student savedStudent = studentRepository.save(student);
+
+        Integer studentId = savedStudent.getStudentId();
+
+        assertTrue(studentRepository.existsById(studentId));
+
+        mockMvc.perform(delete("/students/{id}",studentId)).andExpect(status().isNoContent());
+
+        assertFalse(studentRepository.existsById(studentId));
 
     }
 
