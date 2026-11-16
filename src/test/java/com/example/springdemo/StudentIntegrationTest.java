@@ -159,4 +159,26 @@ public class StudentIntegrationTest {
 
     }
 
+
+    @Test
+    @Transactional
+    void testCreateStudentWithBlankCourse() throws Exception{
+
+        String jsonBody = """
+                {
+                "studentName" : "Sreya",
+                "studentCourse" : ""
+                }
+                """;
+
+        long countBefore = studentRepository.count();
+
+        mockMvc.perform(post("/students").contentType(MediaType.APPLICATION_JSON).content(jsonBody)).andExpect(status().isBadRequest());
+
+        long countAfter = studentRepository.count();
+
+        assertEquals(countBefore, countAfter);
+
+    }
+
 }
