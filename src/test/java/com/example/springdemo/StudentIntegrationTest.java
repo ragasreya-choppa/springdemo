@@ -195,4 +195,40 @@ public class StudentIntegrationTest {
 
     }
 
+    @Test
+    @Transactional
+    void testUpdateNonExistingStudent() throws Exception{
+
+        // choose a non-existing student
+        Integer studentId = 99999;
+
+        // verify the student doesn't exist
+        assertFalse(studentRepository.existsById(studentId));
+
+        // prepare the valid json request body
+        String jsonBody = """
+                {
+                "studentName" : "Sreya",
+                "studentCourse" : "SpringBoot"
+                }
+                """;
+
+
+        // count number of students before PUT request
+        long countBefore = studentRepository.count();
+
+        // perform PUT request
+        mockMvc.perform(put("/students{id}",studentId).contentType(MediaType.APPLICATION_JSON).content(jsonBody))
+                .andExpect(status().isNotFound());
+
+        // verify the student was not created
+        assertFalse(studentRepository.existsById(studentId));
+
+        // verify total student count is unchanged
+        long countAfter = studentRepository.count();
+
+        assertEquals(countBefore,countAfter);
+
+    }
+
 }
