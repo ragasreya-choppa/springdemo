@@ -181,4 +181,18 @@ public class StudentIntegrationTest {
 
     }
 
+    @Test
+    void testGetNonExistingStudent() throws Exception{
+
+        // step 1: choose a student ID
+        Integer studentId = 999999;
+
+        // step 2: verify the student doesn't exist
+        assertFalse(studentRepository.existsById(studentId));
+
+        // step 3: send GET request
+        mockMvc.perform(get("/students/{id}",studentId)).andExpect(status().isNotFound());
+
+    }
+
 }
