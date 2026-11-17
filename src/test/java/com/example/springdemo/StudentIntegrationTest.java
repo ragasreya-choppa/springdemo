@@ -231,4 +231,24 @@ public class StudentIntegrationTest {
 
     }
 
+
+    @Test
+    @Transactional
+    void testDeleteNonExistentStudent() throws Exception{
+
+        Integer studentId = 999999;
+
+        assertFalse(studentRepository.existsById(studentId));
+
+        long countBefore = studentRepository.count();
+
+        mockMvc.perform(delete("/students/{id}",studentId)).andExpect(status().isNotFound());
+
+        long countAfter = studentRepository.count();
+
+        assertEquals(countBefore, countAfter);
+    }
+
+
+
 }
